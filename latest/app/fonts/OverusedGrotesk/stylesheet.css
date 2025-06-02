@@ -1,0 +1,72 @@
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-Black.woff2') format('woff2'),
+        url('OverusedGrotesk-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-SemiBold.woff2') format('woff2'),
+        url('OverusedGrotesk-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-Medium.woff2') format('woff2'),
+        url('OverusedGrotesk-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-Bold.woff2') format('woff2'),
+        url('OverusedGrotesk-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-ExtraBold.woff2') format('woff2'),
+        url('OverusedGrotesk-ExtraBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-Regular.woff2') format('woff2'),
+        url('OverusedGrotesk-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk';
+    src: url('OverusedGrotesk-Light.woff2') format('woff2'),
+        url('OverusedGrotesk-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Overused Grotesk Book';
+    src: url('OverusedGrotesk-Book.woff2') format('woff2'),
+        url('OverusedGrotesk-Book.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
