@@ -66,7 +66,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-300 relative overflow-hidden">
+    <footer className="bg-[#000000] text-gray-300 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -102,7 +102,7 @@ export function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
-                    className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                    className="w-10 h-10 bg-[#111111] hover:bg-[#222222] rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
                     aria-label={social.name}
                   >
                     {social.icon}

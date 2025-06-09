@@ -3,13 +3,13 @@ import React from "react";
 
 const FeatureCard = ({ title, description, cardTitle, cardSubtitle }) => {
   return (
-    <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl p-6 text-white shadow-lg">
+    <div className="bg-[#F6F6F6] rounded-2xl p-6  ">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="font-polysans text-xl md:text-2xl font-[500] mb-1">
+        <h3 className="font-polysans text-[#111111] text-xl md:text-2xl font-[500] mb-1">
           {title}
         </h3>
-        <p className="font-overused-grotesk text-blue-100 text-sm md:text-base mb-1 md:mb-2">
+        <p className="font-overused-grotesk text-[#333333] text-sm md:text-base mb-1 md:mb-2">
           {description}
         </p>
       </div>

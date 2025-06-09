@@ -19,7 +19,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
+  // Close mobile menu when route changes (this is already handled, but keeping it for completeness)
   useEffect(() => {
     setIsMenuOpen(false);
     console.log(pathname);
@@ -30,6 +30,7 @@ export function Navbar() {
     { name: "Our Process", href: "/#process" },
     { name: "NGOs", href: "/ngos" },
     { name: "Events", href: "/events" },
+    { name: "Onboard", href: "/onboard" }, // New link added
   ];
 
   const toggleMenu = () => {
@@ -47,13 +48,13 @@ export function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "bg-white/95" : "bg-transparent"
-      }`}
+      } ${isMenuOpen ? "bg-white" : ""}`}
     >
       <Padding className="">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="font-polysans text-xl lg:text-2xl font-[500]  duration-200">
+            <div className="font-polysans text-xl lg:text-2xl font-[500]  duration-200">
               <span className="text-[#00afef]">nyce</span>
               <span className="text-[#f63ee9]"> club</span>
             </div>
@@ -75,7 +76,7 @@ export function Navbar() {
                           : active
                           ? "text-gray-900"
                           : "text-gray-600 hover:text-gray-900"
-                      }  `}
+                      }  `}
                     >
                       {item.name}
                     </span>
@@ -85,7 +86,9 @@ export function Navbar() {
             </div>
             {/* Donate Now Button */}
             <Link href="/donate">
-              <button className="bg-[#FBFB4C] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-6 py-2.5 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
+              <button className="bg-[#fbfb4c] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-6 py-2.5 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
+                {" "}
+                {/* Updated yellow color */}
                 <span>Donate Now</span>
                 <svg
                   className="w-4 h-4 transition-transform -rotate-45 duration-200"
@@ -134,13 +137,19 @@ export function Navbar() {
         <div
           className={`lg:hidden transition-all duration-300 ease-in-out ${
             isMenuOpen
-              ? "max-h-64 opacity-100 pb-6"
+              ? "max-h-96 opacity-100 pb-6" // Increased max-h for more space
               : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
           <div className="pt-4 pb-2 space-y-1 border-t border-gray-100">
             {navItems.map((item) => (
-              <Link key={item.name} href={item.href}>
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {" "}
+                {/* Added onClick handler */}
                 <div
                   className={`block px-4 py-3 rounded-lg font-overused-grotesk font-medium transition-all duration-200 ${
                     isActive(item.href)
@@ -152,28 +161,6 @@ export function Navbar() {
                 </div>
               </Link>
             ))}
-
-            {/* Mobile Donate Button */}
-            <div className="pt-4">
-              <Link href="/donate">
-                <button className="w-full bg-[#c4f82a] hover:bg-[#b8e625] text-gray-900 font-overused-grotesk font-semibold px-6 py-3 rounded-full transition-all duration-200  flex items-center justify-center space-x-2">
-                  <span>Donate Now</span>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </button>
-              </Link>
-            </div>
           </div>
         </div>
       </Padding>

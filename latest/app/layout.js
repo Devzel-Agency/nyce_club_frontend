@@ -2,6 +2,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { UserProvider } from "@/context/userContext";
 
 // Overused Grotesk
 const overusedGrotesk = localFont({
@@ -106,9 +108,12 @@ export default function RootLayout({ children }) {
       className={`${overusedGrotesk.variable} ${polySans.variable}`}
     >
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <UserProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <Toaster />
+        </UserProvider>
       </body>
     </html>
   );

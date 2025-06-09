@@ -1,51 +1,19 @@
 import NGOProfile from "@/sections/ngos/ngoProfile";
+import GetAllNgosApi from "@/apis/ngo/GetAllNgosApi";
+import GetNgoByIdApi from "@/apis/ngo/GetNgoByIdApi";
 
-// app/ngos/[id]/page.js
-async function fetchNGOs() {
-  try {
-    const res = await fetch("http://localhost:8000/api/v1/ngo/getallngos", {
-      cache: "force-cache",
-    });
-    if (!res.ok) {
-      throw new Error(`API request failed with status ${res.status}`);
-    }
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error("Error fetching NGOs:", error);
-    return [];
-  }
-}
-
-async function fetchNGOById(id) {
-  try {
-    console.log(`Fetching NGO by ID: ${id}`);
-    const res = await fetch(
-      `http://localhost:8000/api/v1/ngo/getngobyid/${id}`,
-      {
-        cache: "force-cache",
-      }
-    );
-    if (!res.ok) {
-      throw new Error(`API request failed with status ${res.status}`);
-    }
-    const data = await res.json();
-    console.log("NGO by ID response:", data);
-    return data.data || {};
-  } catch (error) {
-    console.error(`Error fetching NGO by ID ${id}:`, error.message);
-    return {};
-  }
-}
+// This function for generating static paths remains correct.
 export async function generateStaticParams() {
-  const ngos = await fetchNGOs();
+  const ngos = await GetAllNgosApi();
   return ngos.map((ngo) => ({
     id: ngo._id,
   }));
 }
 
+// The page component needs to handle the `params` promise.
 export default async function NgoPage({ params }) {
-  const ngo = await fetchNGOById(params.id);
+  const resolvedParams = await params;
+  const ngo = await GetNgoByIdApi(resolvedParams.id);
 
   return (
     <div>
