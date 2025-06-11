@@ -141,11 +141,11 @@ const Onboard = () => {
   };
 
   return (
-    <Padding className="py-10 md:py-20 lg:py-28 bg-gray-50 min-h-screen">
+    <Padding className="py-20 lg:py-28 bg-gray-50 min-h-screen">
       <div className="max-w-3xl mx-auto">
-        <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm">
+        <div className="space-y-8 md:bg-white p-4 py-6 md:p-8 rounded-2xl md:shadow-sm">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-gray-900 font-polysans">
+            <h1 className="text-4xl font-medium text-gray-900 font-polysans">
               NGO Onboarding Form
             </h1>
             <p className="text-gray-600 text-lg font-overused-grotesk">

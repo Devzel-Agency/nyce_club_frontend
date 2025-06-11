@@ -33,7 +33,7 @@ const socials = [
 export default function Events() {
   return (
     <div className="bg-white min-h-screen">
-      <main className="max-w-3xl mx-auto px-4 py-14 flex flex-col items-center pt-32">
+      <main className="max-w-3xl mx-auto px-4 py-14 flex flex-col items-center pt-28 lg:pt-28">
         <h1 className="text-3xl md:text-4xl  text-gray-900 mb-6 font-polysans font-medium text-center">
           Events Coming Soon
         </h1>

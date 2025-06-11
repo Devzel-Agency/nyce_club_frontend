@@ -1,14 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Padding from "./padding";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   // Handle scroll effect
   useEffect(() => {
@@ -85,7 +84,7 @@ export function Navbar() {
               })}
             </div>
             {/* Donate Now Button */}
-            <Link href="/donate">
+            <Link href="/ngos">
               <button className="bg-[#fbfb4c] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-6 py-2.5 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
                 {" "}
                 {/* Updated yellow color */}

@@ -201,7 +201,9 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="font-overused-grotesk text-gray-400 text-center md:text-left">
-              © 2024 <span className="text-[#00afef]">nyce</span>
+              © {new Date().getFullYear()}
+              {"  "}
+              <span className="text-[#00afef]">nyce</span>
               <span className="text-[#f63ee9]"> club</span>. All rights
               reserved. Made with ❤️ for social impact.
             </p>
