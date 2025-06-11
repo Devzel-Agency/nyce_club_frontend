@@ -1,5 +1,6 @@
 // sections/ngos/ngos.js
 "use client";
+import { BACKEND_URL } from "@/apis/variables";
 import Link from "next/link";
 
 export default function Ngos({ ngos }) {
@@ -23,9 +24,8 @@ export default function Ngos({ ngos }) {
               >
                 <img
                   src={
-                    `${
-                      "http://localhost:8000/upload/" + ngo.ngoImages[0]?.file
-                    }` || "https://via.placeholder.com/150"
+                    `${`${BACKEND_URL}/upload/` + ngo.ngoImages[0]?.file}` ||
+                    "https://via.placeholder.com/150"
                   }
                   alt={ngo.ngoName}
                   className="w-32 h-32 rounded-md object-cover border-2 border-[#FBFB4C]"

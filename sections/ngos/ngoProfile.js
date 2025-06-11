@@ -16,6 +16,7 @@ import SignupForm from "@/components/auth";
 import { useUser } from "@/context/userContext";
 import GeneratePaymentLinkApi from "@/apis/payment/GeneratePaymentLinkApi";
 import { toast } from "sonner";
+import { BACKEND_URL } from "@/apis/variables";
 
 // New Reusable Donation Widget Component
 const DonationWidget = ({
@@ -329,7 +330,7 @@ export default function NGOProfile({ ngo }) {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={
-                    `http://localhost:8000/upload/${item.img}` ||
+                    `${BACKEND_URL}/upload/${item.img}` ||
                     "https://via.placeholder.com/600"
                   }
                   alt={item.alt}
@@ -494,7 +495,7 @@ export default function NGOProfile({ ngo }) {
                   {ngo.proofDocuments.map((doc, index) => (
                     <a
                       key={index}
-                      href={`http://localhost:8000/upload/${doc.file}`}
+                      href={`${BACKEND_URL}/upload/${doc.file}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center p-4 sm:p-5 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
@@ -540,7 +541,7 @@ export default function NGOProfile({ ngo }) {
                         >
                           <video
                             ref={(el) => (videoRefs.current[story._id] = el)}
-                            src={`http://localhost:8000/upload/${story.video}`}
+                            src={`${BACKEND_URL}/upload/${story.video}`}
                             className="absolute top-0 left-0 w-full h-full"
                             frameBorder="0"
                             allow="autoplay; fullscreen"
