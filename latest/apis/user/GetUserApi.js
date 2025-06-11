@@ -8,6 +8,8 @@ const GetUserApi = async (token) => {
     const response = await axiosInstance.get("/api/v1/user/profile", {
       headers,
     });
+    console.log(response);
+
     return response.data;
   } catch (error) {
     localStorage.removeItem("token");

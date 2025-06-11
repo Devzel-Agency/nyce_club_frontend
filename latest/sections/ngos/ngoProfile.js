@@ -1,6 +1,6 @@
 // sections/ngos/ngoProfile.js
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react"; // Added useCallback
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,16 +10,16 @@ import {
   ArrowRight,
   Info,
   X,
-  Loader2, // Added for loading spinner
+  Loader2,
 } from "lucide-react";
 import SignupForm from "@/components/auth";
 import { useUser } from "@/context/userContext";
 import GeneratePaymentLinkApi from "@/apis/payment/GeneratePaymentLinkApi";
-import { toast } from "sonner"; // Import Toaster and toast
+import { toast } from "sonner";
 
 // New Reusable Donation Widget Component
 const DonationWidget = ({
-  totalDonation,
+  donatedAmount, // Renamed for clarity
   totalDonationNeeded,
   onSponsor,
   isLoading,
@@ -31,10 +31,12 @@ const DonationWidget = ({
   useEffect(() => {
     // Ensure totalDonationNeeded is not zero to prevent division by zero
     if (totalDonationNeeded > 0) {
-      const progress = (parseInt(donationAmount) / totalDonationNeeded) * 100;
+      const progress = (parseInt(donatedAmount) / totalDonationNeeded) * 100;
       setDonationProgress(Math.min(progress, 100));
+    } else {
+      setDonationProgress(0); // If no target, progress is 0
     }
-  }, [donationAmount, totalDonationNeeded]);
+  }, [donatedAmount, totalDonationNeeded]);
 
   const handleSponsorClick = () => {
     onSponsor(donationAmount);
@@ -47,7 +49,8 @@ const DonationWidget = ({
           <span>Choose Amount</span>
           <span className="flex items-center">
             <Info className="w-4 h-4 mr-1" />
-            Total cost: ₹{totalDonation.toLocaleString()}
+            {/* Updated label to reflect 'donated amount' */}
+            Total Donated: ₹{donatedAmount.toLocaleString()}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2 mb-4">
@@ -136,9 +139,11 @@ export default function NGOProfile({ ngo }) {
   const { state } = useUser();
   const user = state.user || {};
 
+  console.log(user);
+
   const [pendingDonationAmount, setPendingDonationAmount] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLoading, setIsLoading] = useState(false); // Added for loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const videoRefs = useRef({});
   const [isVideoPlaying, setIsVideoPlaying] = useState({});
@@ -147,7 +152,7 @@ export default function NGOProfile({ ngo }) {
   const impactImages = ngo.ngoImages.map((img, index) => ({
     img: img.file,
     alt: `${ngo.ngoName} Impact ${index + 1}`,
-    caption: ngo.ngoDescription,
+    caption: ngo.ngoTagline,
   }));
 
   const donationBreakdown = ngo.donationBreakdown.map((item) => ({
@@ -155,13 +160,21 @@ export default function NGOProfile({ ngo }) {
     value: parseInt(item.amount),
   }));
 
-  const totalDonation = donationBreakdown.reduce(
+  const receiveDonation = ngo.receiveDonation.map((item) => ({
+    name: item.expense,
+    value: parseInt(item.amount),
+  }));
+
+  const totalDonationTarget = donationBreakdown.reduce(
     (sum, item) => sum + item.value,
     0
   );
-
-  const totalDonationNeeded =
-    parseInt(ngo.donationBreakdown[0]?.amount) || 50000;
+  const totalRecievedDonation = receiveDonation.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
+  // Ensured consistency: totalDonationNeeded now explicitly refers to the target
+  const totalDonationNeeded = totalDonationTarget;
   const COLORS = ["#4299E1", "#38B2AC", "#ED8936"];
 
   const generatePaymentLink = useCallback(
@@ -177,7 +190,9 @@ export default function NGOProfile({ ngo }) {
         const data = await GeneratePaymentLinkApi(
           parseInt(amount),
           ngo._id,
-          ngo.ngoName
+          ngo.ngoName,
+          user.id,
+          user.phoneNumber
         );
         if (data?.payment_link) {
           window.location.href = data.payment_link;
@@ -194,7 +209,7 @@ export default function NGOProfile({ ngo }) {
       }
     },
     [user.isVerified, ngo._id, ngo.ngoName]
-  ); // Added dependencies
+  );
 
   useEffect(() => {
     if (user.isVerified && pendingDonationAmount) {
@@ -202,7 +217,7 @@ export default function NGOProfile({ ngo }) {
       generatePaymentLink(pendingDonationAmount);
       setPendingDonationAmount(null); // Clear pending amount after initiating
     }
-  }, [user.isVerified, pendingDonationAmount, generatePaymentLink]); // Added generatePaymentLink to dependencies
+  }, [user.isVerified, pendingDonationAmount, generatePaymentLink]);
 
   // Handle video playback when slides change
   useEffect(() => {
@@ -277,7 +292,7 @@ export default function NGOProfile({ ngo }) {
         <div className="p-6">
           {/* Use the reusable widget here */}
           <DonationWidget
-            totalDonation={totalDonation}
+            donatedAmount={totalRecievedDonation}
             totalDonationNeeded={totalDonationNeeded}
             onSponsor={generatePaymentLink}
             isLoading={isLoading}
@@ -463,7 +478,7 @@ export default function NGOProfile({ ngo }) {
                           Total Sponsorship Cost
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right font-overused-grotesk">
-                          ₹{totalDonation.toLocaleString()}
+                          ₹{totalDonationTarget.toLocaleString()}
                         </td>
                       </tr>
                     </tbody>
@@ -523,15 +538,16 @@ export default function NGOProfile({ ngo }) {
                             position: "relative",
                           }}
                         >
-                          <iframe
+                          <video
                             ref={(el) => (videoRefs.current[story._id] = el)}
-                            src={story.video}
+                            src={`http://localhost:8000/upload/${story.video}`}
                             className="absolute top-0 left-0 w-full h-full"
                             frameBorder="0"
                             allow="autoplay; fullscreen"
                             allowFullScreen
+                            autoPlay
                             title={story.title}
-                          ></iframe>
+                          ></video>
                         </div>
                         <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4 z-20">
                           <button
@@ -573,12 +589,12 @@ export default function NGOProfile({ ngo }) {
                     {ngo.currentOffering.title}
                   </h2>
                   <p className="text-gray-600 text-sm mt-1 font-overused-grotesk">
-                    Your donation will support {ngo.currentOffering.description}
+                    {ngo.currentOffering.description}
                   </p>
                 </div>
                 {/* Use the reusable widget here */}
                 <DonationWidget
-                  totalDonation={totalDonation}
+                  donatedAmount={totalRecievedDonation}
                   totalDonationNeeded={totalDonationNeeded}
                   onSponsor={generatePaymentLink}
                   isLoading={isLoading}
