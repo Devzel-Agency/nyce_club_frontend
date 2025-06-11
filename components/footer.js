@@ -62,9 +62,9 @@ export function Footer() {
   ];
 
   const legalLinks = [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "Refund Policy", href: "/refund" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-and-conditions" },
+    { name: "Refund Policy", href: "/refund-policy" },
   ];
 
   return (
