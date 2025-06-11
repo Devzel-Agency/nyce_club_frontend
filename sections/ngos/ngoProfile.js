@@ -17,6 +17,7 @@ import { useUser } from "@/context/userContext";
 import GeneratePaymentLinkApi from "@/apis/payment/GeneratePaymentLinkApi";
 import { toast } from "sonner";
 import { BACKEND_URL } from "@/apis/variables";
+import StoriesOfImpact from "@/components/storiesOfImpact";
 
 // New Reusable Donation Widget Component
 const DonationWidget = ({
@@ -334,7 +335,7 @@ export default function NGOProfile({ ngo }) {
                     "https://via.placeholder.com/600"
                   }
                   alt={item.alt}
-                  className="w-full h-full object-contain sm:object-cover"
+                  className="w-full h-full object-cover sm:object-cover"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                   <h2 className="text-2xl sm:text-3xl md:text-4xl mb-2 text-white font-polysans font-medium">
@@ -415,8 +416,8 @@ export default function NGOProfile({ ngo }) {
                         className="bg-white p-4 sm:p-6 rounded-lg border border-gray-100"
                       >
                         <div className="flex items-start">
-                          <div className="p-2 bg-blue-100 h-10 w-10 flex justify-center items-center rounded-full mr-4">
-                            <span className="text-blue-600 text-xl uppercase text-center font-medium font-overused-grotesk">
+                          <div className="  bg-blue-100 min-h-9 h-9 min-w-9 w-9 flex justify-center items-center rounded-full mr-4">
+                            <span className="text-blue-600 text-xl mb-0.5 uppercase text-center font-medium font-overused-grotesk">
                               {offering.name[0]}
                             </span>
                           </div>
@@ -522,62 +523,7 @@ export default function NGOProfile({ ngo }) {
                 </div>
               </section>
 
-              <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
-                <h2 className="text-3xl mb-6 font-polysans font-medium">
-                  Stories of Impact
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {ngo.storiesOfImpact.map((story, index) => (
-                    <div key={index} className="rounded-lg overflow-hidden">
-                      <div
-                        className="relative bg-black"
-                        style={{ maxWidth: "400px", margin: "0 auto" }}
-                      >
-                        <div
-                          style={{
-                            padding: "177.78% 0 0 0",
-                            position: "relative",
-                          }}
-                        >
-                          <video
-                            ref={(el) => (videoRefs.current[story._id] = el)}
-                            src={`${BACKEND_URL}/upload/${story.video}`}
-                            className="absolute top-0 left-0 w-full h-full"
-                            frameBorder="0"
-                            allow="autoplay; fullscreen"
-                            allowFullScreen
-                            autoPlay
-                            title={story.title}
-                          ></video>
-                        </div>
-                        <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4 z-20">
-                          <button
-                            onClick={() => toggleVideo(story._id)}
-                            className="w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 flex items-center justify-center transition-all duration-200"
-                          >
-                            {!isVideoPlaying[story._id] ? (
-                              <div className="w-0 h-0 border-t-5 border-b-5 border-t-transparent border-b-transparent border-l-10 border-l-white ml-1"></div>
-                            ) : (
-                              <div className="flex space-x-1">
-                                <div className="w-2 h-6 bg-white rounded-sm"></div>
-                                <div className="w-2 h-6 bg-white rounded-sm"></div>
-                              </div>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-4 bg-gray-50">
-                        <h3 className="text-lg font-polysans font-medium">
-                          {story.title}
-                        </h3>
-                        <p className="text-gray-700 mt-2 font-overused-grotesk">
-                          {story.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <StoriesOfImpact storiesOfImpact={ngo.storiesOfImpact} />
             </div>
 
             <div className="hidden lg:block lg:w-1/3">

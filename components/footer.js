@@ -54,9 +54,11 @@ export function Footer() {
   ];
 
   const quickLinks = [
-    { name: "About Us", href: "/about" },
-    { name: "Our NGOs", href: "/ngo" },
-    { name: "How It Works", href: "/process" },
+    { name: "Home", href: "/" },
+    { name: "Our Process", href: "/#process" },
+    { name: "NGOs", href: "/ngos" },
+    { name: "Events", href: "/events" },
+    { name: "Onboard", href: "/onboard" }, // New link added
   ];
 
   const legalLinks = [
