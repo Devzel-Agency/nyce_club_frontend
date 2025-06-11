@@ -1,24 +1,42 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Import useRef
 import { usePathname } from "next/navigation";
 import Padding from "./padding";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isTranslatingUp, setIsTranslatingUp] = useState(false); // New state for translation
   const pathname = usePathname();
+  const lastScrollY = useRef(0); // Ref to store the last scroll position
 
-  // Handle scroll effect
+  // Handle scroll effect and translation
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      // Update isScrolled based on scroll position
+      setIsScrolled(currentScrollY > 20);
+
+      // Determine scroll direction for translation
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scrolled down and past initial threshold
+        setIsTranslatingUp(true);
+      } else if (
+        currentScrollY < lastScrollY.current ||
+        currentScrollY <= 100
+      ) {
+        // Scrolled up or back to top
+        setIsTranslatingUp(false);
+      }
+      lastScrollY.current = currentScrollY;
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when route changes (this is already handled, but keeping it for completeness)
+  // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
     console.log(pathname);
@@ -29,7 +47,7 @@ export function Navbar() {
     { name: "Our Process", href: "/#process" },
     { name: "NGOs", href: "/ngos" },
     { name: "Events", href: "/events" },
-    { name: "Onboard", href: "/onboard" }, // New link added
+    { name: "Onboard", href: "/onboard" },
   ];
 
   const toggleMenu = () => {
@@ -45,9 +63,10 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
         isScrolled ? "bg-white/95" : "bg-transparent"
-      } ${isMenuOpen ? "bg-white" : ""}`}
+      } ${isMenuOpen ? "bg-white" : ""}
+      ${isTranslatingUp ? "-translate-y-full" : "translate-y-0"}`}
     >
       <Padding className="">
         <div className="flex items-center justify-between h-16 lg:h-20">
@@ -136,7 +155,7 @@ export function Navbar() {
         <div
           className={`lg:hidden transition-all duration-300 ease-in-out ${
             isMenuOpen
-              ? "max-h-96 opacity-100 pb-6" // Increased max-h for more space
+              ? "max-h-96 opacity-100 pb-6"
               : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
@@ -148,7 +167,6 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 {" "}
-                {/* Added onClick handler */}
                 <div
                   className={`block px-4 py-3 rounded-lg font-overused-grotesk font-medium transition-all duration-200 ${
                     isActive(item.href)

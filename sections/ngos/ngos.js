@@ -56,7 +56,7 @@ export default function Ngos({ ngos }) {
         <div className="flex justify-center mt-4">
           <Link
             href="#"
-            className="bg-[#FBFB4C] text-gray-900 px-8 py-3 font-bold rounded-full font-overused-grotesk transition-transform  text-md lg:text-lg"
+            className="bg-[#FBFB4C] text-gray-900 px-8 text-center py-3 font-bold rounded-full font-overused-grotesk transition-transform  text-md lg:text-lg"
           >
             Support a Cause That Matters to You
           </Link>

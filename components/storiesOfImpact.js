@@ -57,7 +57,7 @@ const StoriesOfImpact = ({ storiesOfImpact }) => {
   };
 
   const handleVideoError = (storyId, error) => {
-    console.error(`Video error for story ${storyId}:`, error);
+    console.log(`Video error for story ${storyId}:`, error);
     setPlayingVideos((prev) => ({ ...prev, [storyId]: false }));
     setLoadingVideos((prev) => ({ ...prev, [storyId]: false }));
   };

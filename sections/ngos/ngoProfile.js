@@ -189,20 +189,22 @@ export default function NGOProfile({ ngo }) {
       }
       setIsLoading(true);
       try {
-        const data = await GeneratePaymentLinkApi(
-          parseInt(amount),
-          ngo._id,
-          ngo.ngoName,
-          user.id,
-          user.phoneNumber
-        );
-        if (data?.payment_link) {
-          window.location.href = data.payment_link;
-        } else {
-          toast.error(
-            "Failed to generate payment link. Please try again later."
-          );
-        }
+        // const data = await GeneratePaymentLinkApi(
+        //   parseInt(amount),
+        //   ngo._id,
+        //   ngo.ngoName,
+        //   user.id,
+        //   user.phoneNumber
+        // );
+        window.location.href =
+          "https://www.upi.me/pay?pa=sonineels@okhdfcbank&tn=NYCE%20CLUB%20DONATION%20(Nelay%20Thaleshwar)";
+        // if (data?.payment_link) {
+        // window.location.href = data.payment_link;
+        // } else {
+        //   toast.error(
+        //     "Failed to generate payment link. Please try again later."
+        //   );
+        // }
       } catch (error) {
         console.error("Error creating payment link:", error);
         toast.error("Failed to generate payment link. Please try again later.");

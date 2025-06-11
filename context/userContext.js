@@ -55,13 +55,13 @@ export const UserProvider = ({ children }) => {
     fetchUserData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center w-full min-h-[100vh]">
-        {/* <Logo /> */}
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center w-full min-h-[100vh]">
+  //       {/* <Logo /> */}
+  //     </div>
+  //   );
+  // }
 
   return (
     <UserContext.Provider value={{ state, dispatch }}>
