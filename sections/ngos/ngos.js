@@ -35,7 +35,7 @@ export default function Ngos({ ngos }) {
                     {ngo.ngoName}
                   </h2>
                   <div className="text-gray-700 mb-3 font-overused-grotesk">
-                    {ngo.ngoDescription}
+                    {ngo.ngoTagline}
                   </div>
                   <div className="flex gap-2">
                     {ngo.ngoTags.map((tag) => (
