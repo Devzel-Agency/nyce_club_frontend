@@ -141,14 +141,9 @@ export default function NGOProfile({ ngo }) {
   const { state } = useUser();
   const user = state.user || {};
 
-  console.log(user);
-
   const [pendingDonationAmount, setPendingDonationAmount] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  const videoRefs = useRef({});
-  const [isVideoPlaying, setIsVideoPlaying] = useState({});
 
   // Memoize complex calculations to prevent re-running on every render
   const impactImages = ngo.ngoImages.map((img, index) => ({
@@ -218,6 +213,7 @@ export default function NGOProfile({ ngo }) {
   useEffect(() => {
     if (user.isVerified && pendingDonationAmount) {
       // If user is verified and there's a pending donation, initiate payment
+      showLoginPopup(false);
       generatePaymentLink(pendingDonationAmount);
       setPendingDonationAmount(null); // Clear pending amount after initiating
     }
@@ -244,38 +240,6 @@ export default function NGOProfile({ ngo }) {
     setCurrentSlide(
       (prev) => (prev - 1 + impactImages.length) % impactImages.length
     );
-  };
-
-  const toggleVideo = (videoId) => {
-    const videoElement = videoRefs.current[videoId];
-    if (videoElement) {
-      const iframe = videoElement;
-      const currentSrc = new URL(iframe.src);
-      const isPlaying = currentSrc.searchParams.get("autoplay") === "1";
-
-      if (isPlaying) {
-        currentSrc.searchParams.set("autoplay", "0");
-        currentSrc.searchParams.set("muted", "1");
-      } else {
-        Object.entries(videoRefs.current).forEach(([id, ref]) => {
-          if (id !== videoId && ref) {
-            const otherIframe = ref;
-            const otherSrc = new URL(otherIframe.src);
-            otherSrc.searchParams.set("autoplay", "0");
-            otherSrc.searchParams.set("muted", "1");
-            otherIframe.src = otherSrc.toString();
-            setIsVideoPlaying((prev) => ({ ...prev, [id]: false }));
-          }
-        });
-        currentSrc.searchParams.set("autoplay", "1");
-        currentSrc.searchParams.set("muted", "0");
-      }
-      iframe.src = currentSrc.toString();
-      setIsVideoPlaying((prev) => ({
-        ...prev,
-        [videoId]: !prev[videoId],
-      }));
-    }
   };
 
   const DonationPopup = () => (
