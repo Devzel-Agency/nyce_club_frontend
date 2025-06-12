@@ -60,13 +60,13 @@ const Hero = () => {
           className="flex sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto"
         >
           <Link
-            href="/ngo"
+            href="/ngos"
             className="bg-[#fbfb4c] text-black w-1/2 sm:w-max px-6 sm:px-11 py-3  rounded-full font-overused-grotesk font-medium text-base sm:text-lg hover:scale-105 transition-transform inline-block text-center"
           >
             Explore NGOs
           </Link>
           <Link
-            href="/process"
+            href="/#process"
             className="  text-white px-6 sm:px-11 w-1/2 sm:w-max py-3  rounded-full font-overused-grotesk font-medium text-base sm:text-lg hover:scale-105 transition-transform inline-block border border-white/90 text-center"
           >
             Our Process
