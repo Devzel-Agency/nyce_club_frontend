@@ -213,7 +213,7 @@ export default function NGOProfile({ ngo }) {
   useEffect(() => {
     if (user.isVerified && pendingDonationAmount) {
       // If user is verified and there's a pending donation, initiate payment
-      showLoginPopup(false);
+      setShowLoginPopup(false);
       generatePaymentLink(pendingDonationAmount);
       setPendingDonationAmount(null); // Clear pending amount after initiating
     }
