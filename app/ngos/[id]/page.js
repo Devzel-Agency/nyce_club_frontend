@@ -2,6 +2,8 @@ import NGOProfile from "@/sections/ngos/ngoProfile";
 import GetAllNgosApi from "@/apis/ngo/GetAllNgosApi";
 import GetNgoByIdApi from "@/apis/ngo/GetNgoByIdApi";
 
+export const dynamic = "force-dynamic";
+
 // This function for generating static paths remains correct.
 export async function generateStaticParams() {
   const ngos = await GetAllNgosApi();
