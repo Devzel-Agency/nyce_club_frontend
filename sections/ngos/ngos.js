@@ -38,7 +38,7 @@ export default function Ngos({ ngos }) {
                   <div className="text-gray-700 mb-3 line-clamp-3 font-overused-grotesk">
                     {ngo.ngoTagline}
                   </div>
-                  <div className="flex w-full gap-2">
+                  <div className="flex md:flex-wrap w-full gap-2">
                     {ngo.ngoTags.map((tag) => (
                       <span
                         key={tag}

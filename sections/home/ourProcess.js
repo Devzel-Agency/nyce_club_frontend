@@ -22,7 +22,7 @@ const OurProcess = () => {
     {
       icon: "donate",
       iconColor: "green",
-      title: "We Audit Them", // Note: This appears to be a duplicate title in the original
+      title: "You Donate Securely", // Note: This appears to be a duplicate title in the original
       description:
         "Donate with confidence—your funds go to trusted organizations, and you'll see the real impact of your contribution",
     },
