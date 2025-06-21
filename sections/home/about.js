@@ -52,7 +52,7 @@ const About = () => {
         {/* CTA Button */}
         <div className="text-center w-full">
           <Link href={"/ngos"}>
-            <button className="bg-black text-white font-overused-grotesk font-medium sm:w-max w-1/2 sm:px-11 py-3 rounded-full text-lg   ">
+            <button className="bg-black  cursor-pointer text-white font-overused-grotesk font-medium sm:w-max w-1/2 sm:px-11 py-3 rounded-full text-lg   ">
               Explore NGOs
             </button>
           </Link>

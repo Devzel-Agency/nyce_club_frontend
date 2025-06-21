@@ -2,6 +2,7 @@
 "use client";
 import { BACKEND_URL } from "@/apis/variables";
 import Padding from "@/components/padding";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Link from "next/link";
 
 export default function Ngos({ ngos }) {
@@ -23,14 +24,19 @@ export default function Ngos({ ngos }) {
                 key={ngo._id}
                 className="w-full flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-lg p-6 mb-6 md:mb-8 lg:mb-10 border border-gray-100 animate-fade-in"
               >
-                <img
-                  src={
-                    `${`${BACKEND_URL}/upload/` + ngo.ngoImages[0]?.file}` ||
-                    "https://via.placeholder.com/150"
-                  }
-                  alt={ngo.ngoName}
-                  className="w-32 h-32 rounded-md object-cover border-2 border-[#FBFB4C]"
-                />
+                <div className=" w-full ">
+                  <AspectRatio ratio={20 / 9}>
+                    <img
+                      src={
+                        `${
+                          `${BACKEND_URL}/upload/` + ngo.ngoImages[0]?.file
+                        }` || "https://via.placeholder.com/150"
+                      }
+                      alt={ngo.ngoName}
+                      className="w-full h-full rounded-md object-cover "
+                    />
+                  </AspectRatio>
+                </div>
                 <div className=" flex flex-col w-full ">
                   <h2 className="text-xl text-gray-900 mb-2 font-polysans font-medium">
                     {ngo.ngoName}
@@ -38,11 +44,11 @@ export default function Ngos({ ngos }) {
                   <div className="text-gray-700 mb-3 line-clamp-3 font-overused-grotesk">
                     {ngo.ngoTagline}
                   </div>
-                  <div className="flex md:flex-wrap w-full gap-2">
+                  <div className="flex flex-wrap w-full gap-2">
                     {ngo.ngoTags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-3 py-1 w-max truncate bg-[#FBFB4C] text-gray-900 text-sm rounded-full font-bold font-overused-grotesk"
+                        className="px-3 py-1 border-gray-500 border text-gray-500 rounded-full text-sm font-overused-grotesk"
                       >
                         {tag}
                       </span>

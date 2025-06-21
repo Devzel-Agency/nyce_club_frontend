@@ -11,6 +11,7 @@ import {
   Info,
   X,
   Loader2,
+  Share2,
 } from "lucide-react";
 import SignupForm from "@/components/auth";
 import { useUser } from "@/context/userContext";
@@ -18,6 +19,10 @@ import GeneratePaymentLinkApi from "@/apis/payment/GeneratePaymentLinkApi";
 import { toast } from "sonner";
 import { BACKEND_URL } from "@/apis/variables";
 import StoriesOfImpact from "@/components/storiesOfImpact";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import clsx from "clsx";
+import { motion } from "framer-motion";
+import Padding from "@/components/padding";
 
 // New Reusable Donation Widget Component
 const DonationWidget = ({
@@ -137,6 +142,7 @@ const DonationWidget = ({
 export default function NGOProfile({ ngo }) {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showDonationPopup, setShowDonationPopup] = useState(false);
+  const [activeSection, setActiveSection] = useState("about");
 
   const { state } = useUser();
   const user = state.user || {};
@@ -144,6 +150,80 @@ export default function NGOProfile({ ngo }) {
   const [pendingDonationAmount, setPendingDonationAmount] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Navigation items for tabs
+  const navItems = [
+    { id: "about", label: "About" },
+    { id: "offering", label: "Current Offering" },
+    { id: "breakdown", label: "Donation Breakdown" },
+    { id: "documents", label: "Proof & Docs" },
+    { id: "stories", label: "Stories" },
+  ];
+
+  // Handle share functionality
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Support ${ngo.ngoName}`,
+          text: `Help make a difference by supporting ${ngo.ngoName} - ${ngo.ngoTagline}`,
+          url: url,
+        });
+      } catch (error) {
+        // Fallback to clipboard if native sharing fails
+        copyToClipboard(url);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      copyToClipboard(url);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast.success("Link copied to clipboard!");
+      })
+      .catch(() => {
+        toast.error("Failed to copy link");
+      });
+  };
+
+  // Handle tab clicks and smooth scroll to sections
+  const handleTabClick = (sectionId) => {
+    setActiveSection(sectionId);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 100; // Adjust for sticky header
+      const elementPosition = element.offsetTop - offset;
+      window.scrollTo({
+        top: elementPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Track active section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems.map((item) => item.id);
+      const scrollPosition = window.scrollY + 150;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const element = document.getElementById(sections[i]);
+        if (element && element.offsetTop <= scrollPosition) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Memoize complex calculations to prevent re-running on every render
   const impactImages = ngo.ngoImages.map((img, index) => ({
@@ -212,7 +292,7 @@ export default function NGOProfile({ ngo }) {
 
   useEffect(() => {
     if (user.isVerified && pendingDonationAmount) {
-      // If user is verified and there's a pending donation, initiate pay ment
+      // If user is verified and there's a pending donation, initiate payment
       setShowLoginPopup(false);
       generatePaymentLink(pendingDonationAmount);
       setPendingDonationAmount(null); // Clear pending amount after initiating
@@ -285,65 +365,118 @@ export default function NGOProfile({ ngo }) {
         />
       )}
 
-      <main className="pb-16 md:pb-8">
-        <section className="relative h-[80vh] sm:h-[400px] md:h-[600px] mb-10 overflow-hidden">
-          {impactImages.map((item, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <div className="w-full h-full flex items-center justify-center bg-black">
-                <img
-                  src={
-                    `${BACKEND_URL}/upload/${item.img}` ||
-                    "https://via.placeholder.com/600"
-                  }
-                  alt={item.alt}
-                  className="w-full h-full object-cover sm:object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl mb-2 text-white font-polysans font-medium">
-                    {ngo.ngoName}
-                  </h2>
-                  <p className="text-base sm:text-lg md:text-xl max-w-2xl text-white font-overused-grotesk">
-                    {item.caption}
-                  </p>
+      <main className="pb-16 md:pb-8 w-full ">
+        <div className=" w-full mb-4 ">
+          <AspectRatio ratio={20 / 9}>
+            <section className="relative w-full h-full mb-10 overflow-hidden">
+              {impactImages.map((item, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-1000 ${
+                    index === currentSlide ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="w-full h-full flex items-center justify-center bg-black">
+                    <img
+                      src={
+                        `${BACKEND_URL}/upload/${item.img}` ||
+                        "https://via.placeholder.com/600"
+                      }
+                      alt={item.alt}
+                      className="w-full h-full object-cover sm:object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl mb-2 text-white font-polysans font-medium">
+                            {ngo.ngoName}
+                          </h2>
+                          <p className="text-base sm:text-lg md:text-xl max-w-2xl text-white font-overused-grotesk">
+                            {item.caption}
+                          </p>
+                        </div>
+                        <button
+                          onClick={handleShare}
+                          className="bg-white/20 cursor-pointer hover:bg-white/40 text-white p-3 rounded-full transition-colors backdrop-blur-sm"
+                          title="Share this NGO"
+                        >
+                          <Share2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={prevSlide}
-            className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full z-10"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full z-10"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
-          </button>
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {impactImages.map((_, index) => (
+              ))}
               <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  currentSlide === index ? "bg-white" : "bg-white/40"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        </section>
+                onClick={prevSlide}
+                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full z-10"
+              >
+                <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full z-10"
+              >
+                <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
+              </button>
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {impactImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      currentSlide === index ? "bg-white" : "bg-white/40"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </section>
+          </AspectRatio>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="sticky top-0 bg-white z-30 mb-8">
+          <Padding className="container mx-auto">
+            <div className="flex overflow-x-auto md:overflow-visible w-full space-x-3 md:space-x-8 no-scrollbar">
+              {navItems.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleTabClick(item.id)}
+                  className={clsx(
+                    "flex-shrink-0 flex flex-col items-center justify-center cursor-pointer transition-colors duration-300 relative py-4",
+                    activeSection === item.id
+                      ? "text-black"
+                      : "text-gray-500 hover:text-gray-700"
+                  )}
+                >
+                  <span className="text-xs md:text-base font-overused-grotesk font-medium">
+                    {item.label}
+                  </span>
+                  {activeSection === item.id && (
+                    <motion.div
+                      layoutId="tab"
+                      className="absolute bottom-0 left-0 h-[2px] bg-black w-full"
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </Padding>
+        </div>
 
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="lg:w-2/3">
-              <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
+              <section
+                id="about"
+                className="bg-white rounded-xl md:border border-gray-100 p-0 sm:p-8 mb-8"
+              >
                 <h2 className="text-3xl mb-4 font-polysans font-medium">
                   About {ngo.ngoName}
                 </h2>
@@ -362,7 +495,10 @@ export default function NGOProfile({ ngo }) {
                 </div>
               </section>
 
-              <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
+              <section
+                id="offering"
+                className="bg-white rounded-xl md:border border-gray-100 p-0 sm:p-8 mb-8"
+              >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-3xl font-polysans font-medium">
                     Current Offering
@@ -405,7 +541,10 @@ export default function NGOProfile({ ngo }) {
                 </div>
               </section>
 
-              <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
+              <section
+                id="breakdown"
+                className="bg-white rounded-xl md:border border-gray-100 p-0 sm:p-8 mb-8"
+              >
                 <h2 className="text-3xl mb-6 font-polysans font-medium">
                   Donation Breakdown
                 </h2>
@@ -454,7 +593,10 @@ export default function NGOProfile({ ngo }) {
                 </div>
               </section>
 
-              <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
+              <section
+                id="documents"
+                className="bg-white rounded-xl md:border border-gray-100 p-0 sm:p-8 mb-8"
+              >
                 <h2 className="text-3xl mb-6 font-polysans font-medium">
                   Proof & Documentation
                 </h2>
@@ -489,7 +631,9 @@ export default function NGOProfile({ ngo }) {
                 </div>
               </section>
 
-              <StoriesOfImpact storiesOfImpact={ngo.storiesOfImpact} />
+              <div id="stories">
+                <StoriesOfImpact storiesOfImpact={ngo.storiesOfImpact} />
+              </div>
             </div>
 
             <div className="hidden lg:block lg:w-1/3">
@@ -518,7 +662,24 @@ export default function NGOProfile({ ngo }) {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-4 z-40 lg:hidden">
+      <div className="sticky -bottom-0.5 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-4 z-40 lg:hidden">
+        <div className=" pb-2">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+              style={{
+                width: `${
+                  (parseInt(totalRecievedDonation) / totalDonationNeeded) *
+                    100 || 0
+                }%`,
+              }}
+            ></div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-500 mt-1 font-overused-grotesk">
+            <span>₹0</span>
+            <span>₹{totalDonationNeeded.toLocaleString()}</span>
+          </div>
+        </div>
         <button
           onClick={() => setShowDonationPopup(true)}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-bold transition-colors font-overused-grotesk flex items-center justify-center"

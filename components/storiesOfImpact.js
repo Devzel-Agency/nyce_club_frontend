@@ -63,7 +63,7 @@ const StoriesOfImpact = ({ storiesOfImpact }) => {
   };
 
   return (
-    <section className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8 mb-8">
+    <section className="bg-white rounded-xl md:border border-gray-100 p-0 sm:p-8 mb-8">
       <h2 className="text-3xl mb-6 font-polysans font-medium">
         Stories of Impact
       </h2>

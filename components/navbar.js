@@ -104,7 +104,7 @@ export function Navbar() {
             </div>
             {/* Donate Now Button */}
             <Link href="/ngos">
-              <button className="bg-[#fbfb4c] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-6 py-2.5 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
+              <button className="bg-[#fbfb4c] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-4 text-sm lg:text-[1rem] py-2 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
                 {" "}
                 {/* Updated yellow color */}
                 <span>Donate Now</span>
