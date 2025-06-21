@@ -74,8 +74,8 @@ const OurProcess = () => {
           </div>
         </div>
         <div className=" flex mt-10 md:mt-14 justify-center w-full">
-          <Link href={"/ngos"}>
-            <button className="bg-black cursor-pointer text-white font-overused-grotesk font-medium sm:w-max w-1/2 sm:px-11 py-3 rounded-full text-lg   ">
+          <Link className=" flex justify-center w-full" href={"/ngos"}>
+            <button className="bg-black  cursor-pointer text-white font-overused-grotesk font-medium sm:w-max w-1/2 sm:px-11 py-3 rounded-full text-lg   ">
               Donate Now
             </button>
           </Link>
