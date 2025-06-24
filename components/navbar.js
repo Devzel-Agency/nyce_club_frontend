@@ -1,15 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react"; // Import useRef
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Padding from "./padding";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isTranslatingUp, setIsTranslatingUp] = useState(false); // New state for translation
+  const [isTranslatingUp, setIsTranslatingUp] = useState(false);
   const pathname = usePathname();
-  const lastScrollY = useRef(0); // Ref to store the last scroll position
+  const lastScrollY = useRef(0);
 
   // Handle scroll effect and translation
   useEffect(() => {
@@ -61,18 +61,24 @@ export function Navbar() {
     return pathname?.startsWith(href);
   };
 
+  // Determine if navbar should be sticky or fixed
+  const isSticky = pathname.includes("/ngos/");
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
-        isScrolled ? "bg-white/95" : "bg-transparent"
-      } ${isMenuOpen ? "bg-white" : ""}
-      ${isTranslatingUp ? "-translate-y-full" : "translate-y-0"}`}
+      className={`${
+        isSticky ? "sticky" : "fixed"
+      } top-0 left-0 right-0 z-50 transition-all duration-400 ${
+        isScrolled ? "bg-white/95" : isSticky ? " bg-white " : "bg-transparent"
+      } ${isMenuOpen ? "bg-white" : ""} ${
+        isTranslatingUp ? "-translate-y-full" : "translate-y-0"
+      }`}
     >
       <Padding className="">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="font-polysans text-xl lg:text-2xl font-[500]  duration-200">
+            <div className="font-polysans text-xl lg:text-2xl font-[500] duration-200">
               <span className="text-[#00afef]">nyce</span>
               <span className="text-[#f63ee9]"> club</span>
             </div>
@@ -94,7 +100,7 @@ export function Navbar() {
                           : active
                           ? "text-gray-900"
                           : "text-gray-600 hover:text-gray-900"
-                      }  `}
+                      }`}
                     >
                       {item.name}
                     </span>
@@ -105,8 +111,6 @@ export function Navbar() {
             {/* Donate Now Button */}
             <Link href="/ngos">
               <button className="bg-[#fbfb4c] cursor-pointer text-gray-900 font-overused-grotesk font-semibold px-4 text-sm lg:text-[1rem] py-2 lg:px-8 lg:py-3 rounded-full duration-200 transform flex items-center space-x-2 group">
-                {" "}
-                {/* Updated yellow color */}
                 <span>Donate Now</span>
                 <svg
                   className="w-4 h-4 transition-transform -rotate-45 duration-200"
@@ -166,7 +170,6 @@ export function Navbar() {
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {" "}
                 <div
                   className={`block px-4 py-3 rounded-lg font-overused-grotesk font-medium transition-all duration-200 ${
                     isActive(item.href)
