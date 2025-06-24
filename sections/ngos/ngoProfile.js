@@ -769,7 +769,7 @@ export default function NGOProfile({ ngo }) {
             ></div>
           </div>
           <div className="flex justify-between text-xs text-gray-500 mt-1 font-overused-grotesk">
-            <span>₹0</span>
+            <span>₹{totalRecievedDonation}</span>
             <span>₹{totalDonationNeeded.toLocaleString("en-IN")}</span>
           </div>
         </div>
