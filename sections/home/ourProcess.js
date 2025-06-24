@@ -1,6 +1,7 @@
 // components/OurProcessSection.jsx
 import Padding from "@/components/padding";
 import ProcessStep from "@/components/processStep";
+import clsx from "clsx";
 import Link from "next/link";
 import React from "react";
 
@@ -57,7 +58,14 @@ const OurProcess = () => {
               >
                 {/* Step Number Circle */}
                 <div className="flex flex-col items-center mr-6 flex-shrink-0">
-                  <div className="w-10 h-10 font-polysans bg-blue-600 text-white rounded-full flex items-center justify-center font-medium text-sm  transition-transform hover:scale-110 z-10">
+                  <div
+                    className={clsx(
+                      "w-10 h-10 font-polysans     rounded-full flex items-center justify-center font-medium text-sm  transition-transform hover:scale-110 z-10",
+                      index % 2 === 0
+                        ? "bg-blue-100 text-blue-600 "
+                        : "bg-[#ffe3fd] text-[#f63ee9]"
+                    )}
+                  >
                     {index + 1}
                   </div>
                 </div>

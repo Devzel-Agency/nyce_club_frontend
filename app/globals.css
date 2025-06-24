@@ -1,6 +1,25 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* In your CSS file (e.g., globals.css or a dedicated CSS module) */
+
+/* For Webkit browsers (Chrome, Safari, Edge, Opera) */
+.scrollbar-custom::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar visually */
+  width: 0; /* Also helpful to ensure no space is taken */
+  height: 0;
+}
+
+/* For Firefox */
+.scrollbar-custom {
+  scrollbar-width: none; /* Hides the scrollbar visually */
+}
+
+/* For Internet Explorer and Edge (older versions) */
+.scrollbar-custom {
+  -ms-overflow-style: none; /* Hides the scrollbar visually */
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

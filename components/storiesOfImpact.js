@@ -1,65 +1,40 @@
 "use client";
-// Clean Stories of Impact Section Component
+// Stories of Impact Section Component with YouTube Support
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause } from "lucide-react";
-import { BACKEND_URL } from "@/apis/variables";
+import { Play, Pause, ExternalLink } from "lucide-react";
 
 const StoriesOfImpact = ({ storiesOfImpact }) => {
-  const videoRefs = useRef({});
   const [playingVideos, setPlayingVideos] = useState({});
-  const [loadingVideos, setLoadingVideos] = useState({});
 
-  // Clean up video references when component unmounts
-  useEffect(() => {
-    return () => {
-      Object.values(videoRefs.current).forEach((video) => {
-        if (video) {
-          video.pause();
-          video.currentTime = 0;
-        }
-      });
-    };
-  }, []);
+  // Function to extract YouTube video ID from URL
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
 
-  const toggleVideo = async (storyId) => {
-    const video = videoRefs.current[storyId];
-    if (!video) return;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
 
-    try {
-      setLoadingVideos((prev) => ({ ...prev, [storyId]: true }));
+  // Function to get YouTube thumbnail URL
+  const getYouTubeThumbnail = (videoId) => {
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  };
 
-      if (playingVideos[storyId]) {
-        // Pause the current video
-        video.pause();
-        setPlayingVideos((prev) => ({ ...prev, [storyId]: false }));
-      } else {
-        // Pause all other videos first
-        Object.entries(videoRefs.current).forEach(([id, videoElement]) => {
-          if (id !== storyId && videoElement && !videoElement.paused) {
-            videoElement.pause();
-            setPlayingVideos((prev) => ({ ...prev, [id]: false }));
-          }
-        });
-
-        // Play the selected video
-        await video.play();
-        setPlayingVideos((prev) => ({ ...prev, [storyId]: true }));
-      }
-    } catch (error) {
-      console.error("Error controlling video playback:", error);
-    } finally {
-      setLoadingVideos((prev) => ({ ...prev, [storyId]: false }));
+  const toggleVideo = (storyId, videoId) => {
+    if (playingVideos[storyId]) {
+      // If video is playing, stop it by resetting the state
+      setPlayingVideos((prev) => ({ ...prev, [storyId]: false }));
+    } else {
+      // Pause all other videos first
+      setPlayingVideos({});
+      // Play the selected video
+      setPlayingVideos((prev) => ({ ...prev, [storyId]: true }));
     }
   };
 
-  const handleVideoEnd = (storyId) => {
-    setPlayingVideos((prev) => ({ ...prev, [storyId]: false }));
-  };
-
-  const handleVideoError = (storyId, error) => {
-    console.log(`Video error for story ${storyId}:`, error);
-    setPlayingVideos((prev) => ({ ...prev, [storyId]: false }));
-    setLoadingVideos((prev) => ({ ...prev, [storyId]: false }));
+  const openYouTubeVideo = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -70,64 +45,101 @@ const StoriesOfImpact = ({ storiesOfImpact }) => {
 
       {storiesOfImpact && storiesOfImpact.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {storiesOfImpact.map((story, index) => (
-            <div
-              key={story._id || index}
-              className="rounded-lg overflow-hidden border border-gray-200"
-            >
-              {/* Video Container */}
-              <div className="relative bg-black aspect-[9/16] w-full group">
-                <video
-                  ref={(el) => {
-                    if (el) {
-                      videoRefs.current[story._id || index] = el;
-                    }
-                  }}
-                  src={`${BACKEND_URL}/upload/${story.video}`}
-                  className="w-full h-full object-cover"
-                  onEnded={() => handleVideoEnd(story._id || index)}
-                  onError={(e) => handleVideoError(story._id || index, e)}
-                  preload="metadata"
-                  playsInline
-                  muted={false}
-                >
-                  Your browser does not support the video tag.
-                </video>
+          {storiesOfImpact.map((story, index) => {
+            const videoId = getYouTubeVideoId(story.video);
+            const storyKey = story._id || index;
 
-                {/* Simple Play/Pause Button */}
-                <div className="absolute bottom-4 right-4">
-                  <button
-                    onClick={() => toggleVideo(story._id || index)}
-                    disabled={loadingVideos[story._id || index]}
-                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl"
-                    aria-label={
-                      playingVideos[story._id || index]
-                        ? "Pause video"
-                        : "Play video"
-                    }
-                  >
-                    {loadingVideos[story._id || index] ? (
-                      <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                    ) : playingVideos[story._id || index] ? (
-                      <Pause className="w-4 h-4 text-gray-700" />
-                    ) : (
-                      <Play className="w-4 h-4 text-gray-700 ml-0.5" />
-                    )}
-                  </button>
+            return (
+              <div
+                key={storyKey}
+                className="rounded-lg overflow-hidden border border-gray-200"
+              >
+                {/* Video Container */}
+                <div className="relative bg-black aspect-[9/16] w-full group">
+                  {videoId ? (
+                    <>
+                      {playingVideos[storyKey] ? (
+                        // YouTube Embed Player
+                        <iframe
+                          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1`}
+                          className="w-full h-full"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={story.title}
+                        ></iframe>
+                      ) : (
+                        // YouTube Thumbnail with Play Button
+                        <>
+                          <img
+                            src={getYouTubeThumbnail(videoId)}
+                            alt={story.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to medium quality thumbnail if maxres fails
+                              e.target.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                            }}
+                          />
+
+                          {/* Play Button Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-200">
+                            <button
+                              onClick={() => toggleVideo(storyKey, videoId)}
+                              className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                              aria-label="Play video"
+                            >
+                              <Play className="w-6 h-6 text-white ml-1" />
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Control Buttons */}
+                      <div className="absolute bottom-4 right-4 flex gap-2">
+                        {playingVideos[storyKey] && (
+                          <button
+                            onClick={() => toggleVideo(storyKey, videoId)}
+                            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl"
+                            aria-label="Close video"
+                          >
+                            <Pause className="w-4 h-4 text-gray-700" />
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => openYouTubeVideo(story.video)}
+                          className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl"
+                          aria-label="Open in YouTube"
+                        >
+                          <ExternalLink className="w-4 h-4 text-gray-700" />
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    // Fallback for invalid YouTube URLs
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <div className="text-center">
+                        <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500 text-sm">
+                          Invalid video URL
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Story Content */}
+                <div className="p-4 bg-gray-50">
+                  <h3 className="text-lg font-polysans font-medium text-gray-900 mb-2">
+                    {story.title}
+                  </h3>
+                  <p className="text-gray-700 text-sm font-overused-grotesk leading-relaxed">
+                    {story.description}
+                  </p>
                 </div>
               </div>
-
-              {/* Story Content */}
-              <div className="p-4 bg-gray-50">
-                <h3 className="text-lg font-polysans font-medium text-gray-900 mb-2">
-                  {story.title}
-                </h3>
-                <p className="text-gray-700 text-sm font-overused-grotesk leading-relaxed">
-                  {story.description}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12">

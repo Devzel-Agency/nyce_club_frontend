@@ -56,8 +56,7 @@ const DonationWidget = ({
           <span>Choose Amount</span>
           <span className="flex items-center">
             <Info className="w-4 h-4 mr-1" />
-            {/* Updated label to reflect 'donated amount' */}
-            Total Donated: ₹{donatedAmount.toLocaleString()}
+            Total Donated: ₹{donatedAmount.toLocaleString("en-IN")}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2 mb-4">
@@ -72,7 +71,7 @@ const DonationWidget = ({
               onClick={() => setDonationAmount(amount)}
               disabled={isLoading}
             >
-              ₹{parseInt(amount).toLocaleString()}
+              ₹{parseInt(amount).toLocaleString("en-IN")}
             </button>
           ))}
         </div>
@@ -101,8 +100,8 @@ const DonationWidget = ({
             ></div>
           </div>
           <div className="flex justify-between text-xs text-gray-500 mt-1 font-overused-grotesk">
-            <span>₹0</span>
-            <span>₹{totalDonationNeeded.toLocaleString()}</span>
+            <span> ₹{donatedAmount.toLocaleString("en-IN")}</span>
+            <span>₹{totalDonationNeeded.toLocaleString("en-IN")}</span>
           </div>
         </div>
         <button
@@ -151,14 +150,43 @@ export default function NGOProfile({ ngo }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  // New state to control scroll-based active section updates
+  const [isScrollingByClick, setIsScrollingByClick] = useState(false);
+
+  // Ref for the scrollable navigation container
+  const navScrollRef = useRef(null);
+
   // Navigation items for tabs
   const navItems = [
     { id: "about", label: "About" },
     { id: "offering", label: "Current Offering" },
     { id: "breakdown", label: "Donation Breakdown" },
-    { id: "documents", label: "Proof & Docs" },
-    { id: "stories", label: "Stories" },
+    { id: "documents", label: "Proof & Documentation" },
+    { id: "stories", label: "Stories Of Impact" },
   ];
+
+  // Function to scroll the active tab into view and center it
+  const scrollActiveTabIntoView = useCallback(() => {
+    if (navScrollRef.current && activeSection) {
+      const activeElement = navScrollRef.current.querySelector(
+        `[data-id="${activeSection}"]`
+      );
+      if (activeElement) {
+        const containerWidth = navScrollRef.current.offsetWidth;
+        const elementWidth = activeElement.offsetWidth;
+        const elementLeft = activeElement.offsetLeft;
+
+        // Calculate the scroll position to center the element
+        const scrollLeft =
+          elementLeft - (containerWidth / 2 - elementWidth / 2);
+
+        navScrollRef.current.scrollTo({
+          left: scrollLeft,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [activeSection]); // Depend on activeSection
 
   // Handle share functionality
   const handleShare = async () => {
@@ -194,7 +222,11 @@ export default function NGOProfile({ ngo }) {
 
   // Handle tab clicks and smooth scroll to sections
   const handleTabClick = (sectionId) => {
+    // 1. Set the intended active section immediately
     setActiveSection(sectionId);
+    // 2. Indicate that a programmatic scroll is about to happen
+    setIsScrollingByClick(true);
+
     const element = document.getElementById(sectionId);
     if (element) {
       const offset = 100; // Adjust for sticky header
@@ -203,27 +235,83 @@ export default function NGOProfile({ ngo }) {
         top: elementPosition,
         behavior: "smooth",
       });
+
+      // Define onScrollEndThrottle here so it's always accessible
+      let timeoutId;
+      const onScrollEndThrottle = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          onScrollEnd();
+        }, 150);
+      };
+
+      // 3. Listen for scroll end to reset `isScrollingByClick`
+      const onScrollEnd = () => {
+        const currentScrollPosition = window.scrollY;
+        const targetElement = document.getElementById(sectionId);
+
+        // Remove the 'scrollend' listener first to prevent multiple calls
+        if ("onscrollend" in window) {
+          window.removeEventListener("scrollend", onScrollEnd);
+        } else {
+          window.removeEventListener("scroll", onScrollEndThrottle);
+        }
+
+        if (targetElement) {
+          const targetPosition = targetElement.offsetTop - offset;
+          // Allow a small tolerance for the scroll end check
+          if (
+            Math.abs(currentScrollPosition - targetPosition) < 5 || // Within 5px of target
+            window.innerHeight + currentScrollPosition >=
+              document.body.offsetHeight - 5 // Scrolled to bottom with a small buffer
+          ) {
+            setIsScrollingByClick(false);
+          }
+        }
+      };
+
+      if ("onscrollend" in window) {
+        window.addEventListener("scrollend", onScrollEnd, { once: true });
+      } else {
+        window.addEventListener("scroll", onScrollEndThrottle);
+      }
     }
   };
 
-  // Track active section on scroll
+  // Track active section on scroll and scroll the navigation bar
   useEffect(() => {
     const handleScroll = () => {
-      const sections = navItems.map((item) => item.id);
-      const scrollPosition = window.scrollY + 150;
+      // ONLY update active section based on scroll if NOT initiated by a tab click
+      if (isScrollingByClick) {
+        return;
+      }
 
+      const sections = navItems.map((item) => item.id);
+      const scrollPosition = window.scrollY + 150; // Offset for sticky header
+
+      let newActiveSection = null;
       for (let i = sections.length - 1; i >= 0; i--) {
         const element = document.getElementById(sections[i]);
         if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(sections[i]);
+          newActiveSection = sections[i];
           break;
         }
+      }
+
+      if (newActiveSection && newActiveSection !== activeSection) {
+        setActiveSection(newActiveSection);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [activeSection, navItems, isScrollingByClick]); // Depend on isScrollingByClick
+
+  // Effect to scroll the active navigation tab into view
+  // This will run when `activeSection` changes, whether by click or scroll
+  useEffect(() => {
+    scrollActiveTabIntoView();
+  }, [activeSection, scrollActiveTabIntoView]);
 
   // Memoize complex calculations to prevent re-running on every render
   const impactImages = ngo.ngoImages.map((img, index) => ({
@@ -246,10 +334,11 @@ export default function NGOProfile({ ngo }) {
     (sum, item) => sum + item.value,
     0
   );
-  const totalRecievedDonation = receiveDonation.reduce(
-    (sum, item) => sum + item.value,
-    0
-  );
+  // const totalRecievedDonation = receiveDonation.reduce(
+  //   (sum, item) => sum + item.value,
+  //   0
+  // );
+  const totalRecievedDonation = ngo.tempReceivedDonation || 0;
   // Ensured consistency: totalDonationNeeded now explicitly refers to the target
   const totalDonationNeeded = totalDonationTarget;
   const COLORS = ["#4299E1", "#38B2AC", "#ED8936"];
@@ -295,7 +384,7 @@ export default function NGOProfile({ ngo }) {
       // If user is verified and there's a pending donation, initiate payment
       setShowLoginPopup(false);
       generatePaymentLink(pendingDonationAmount);
-      setPendingDonationAmount(null); // Clear pending amount after initiating
+      setPendingDonationAmount(null); // Clear pending amount if login is closed
     }
   }, [user.isVerified, pendingDonationAmount, generatePaymentLink]);
 
@@ -388,7 +477,7 @@ export default function NGOProfile({ ngo }) {
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                       <div className="flex justify-between items-end">
                         <div>
-                          <h2 className="text-2xl sm:text-3xl md:text-4xl mb-2 text-white font-polysans font-medium">
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl md:mb-2 text-white font-polysans font-medium">
                             {ngo.ngoName}
                           </h2>
                           <p className="text-base sm:text-lg md:text-xl max-w-2xl text-white font-overused-grotesk">
@@ -397,10 +486,10 @@ export default function NGOProfile({ ngo }) {
                         </div>
                         <button
                           onClick={handleShare}
-                          className="bg-white/20 cursor-pointer hover:bg-white/40 text-white p-3 rounded-full transition-colors backdrop-blur-sm"
+                          className="bg-white/20 cursor-pointer relative z-[500] hover:bg-white/40 text-white p-2 md:p-3 rounded-full transition-colors backdrop-blur-[1px] md:backdrop-blur-[2px]"
                           title="Share this NGO"
                         >
-                          <Share2 className="w-5 h-5" />
+                          <Share2 className=" w-3.5 h-3.5 md:w-5 md:h-5" />
                         </button>
                       </div>
                     </div>
@@ -438,7 +527,10 @@ export default function NGOProfile({ ngo }) {
         {/* Navigation Tabs */}
         <div className="sticky top-0 bg-white z-30 mb-8">
           <Padding className="container mx-auto">
-            <div className="flex overflow-x-auto md:overflow-visible w-full space-x-3 md:space-x-8 no-scrollbar">
+            <div
+              ref={navScrollRef} // Assign the ref here
+              className="flex overflow-x-auto scrollbar-custom md:overflow-visible w-full space-x-3 md:space-x-8 scroll-smooth scrollbar-custom" // Added scrollbar-custom
+            >
               {navItems.map((item) => (
                 <div
                   key={item.id}
@@ -449,8 +541,9 @@ export default function NGOProfile({ ngo }) {
                       ? "text-black"
                       : "text-gray-500 hover:text-gray-700"
                   )}
+                  data-id={item.id} // Important for selecting the element
                 >
-                  <span className="text-xs md:text-base font-overused-grotesk font-medium">
+                  <span className="text-base font-overused-grotesk font-medium">
                     {item.label}
                   </span>
                   {activeSection === item.id && (
@@ -518,7 +611,7 @@ export default function NGOProfile({ ngo }) {
                         className="bg-white p-4 sm:p-6 rounded-lg border border-gray-100"
                       >
                         <div className="flex items-start">
-                          <div className="  bg-blue-100 min-h-9 h-9 min-w-9 w-9 flex justify-center items-center rounded-full mr-4">
+                          <div className=" bg-blue-100 min-h-9 h-9 min-w-9 w-9 flex justify-center items-center rounded-full mr-4">
                             <span className="text-blue-600 text-xl mb-0.5 uppercase text-center font-medium font-overused-grotesk">
                               {offering.name[0]}
                             </span>
@@ -576,7 +669,7 @@ export default function NGOProfile({ ngo }) {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right font-overused-grotesk">
-                            {item.value.toLocaleString()}
+                            {item.value.toLocaleString("en-IN")}
                           </td>
                         </tr>
                       ))}
@@ -585,7 +678,7 @@ export default function NGOProfile({ ngo }) {
                           Total Sponsorship Cost
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right font-overused-grotesk">
-                          ₹{totalDonationTarget.toLocaleString()}
+                          ₹{totalDonationTarget.toLocaleString("en-IN")}
                         </td>
                       </tr>
                     </tbody>
@@ -677,7 +770,7 @@ export default function NGOProfile({ ngo }) {
           </div>
           <div className="flex justify-between text-xs text-gray-500 mt-1 font-overused-grotesk">
             <span>₹0</span>
-            <span>₹{totalDonationNeeded.toLocaleString()}</span>
+            <span>₹{totalDonationNeeded.toLocaleString("en-IN")}</span>
           </div>
         </div>
         <button
