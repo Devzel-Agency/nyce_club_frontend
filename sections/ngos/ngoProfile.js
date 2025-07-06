@@ -361,7 +361,7 @@ export default function NGOProfile({ ngo }) {
         //   user.phoneNumber
         // );
         window.location.href =
-          "https://www.upi.me/pay?pa=9821155588@yes&am=97460&tn=NYCE%20CLUB";
+          "https://www.upi.me/pay?pa=9821155588@yes&tn=NYCE%20CLUB";
         // if (data?.payment_link) {
         // window.location.href = data.payment_link;
         // } else {
