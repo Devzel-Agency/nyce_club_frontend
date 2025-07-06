@@ -361,7 +361,7 @@ export default function NGOProfile({ ngo }) {
         //   user.phoneNumber
         // );
         window.location.href =
-          "https://www.upi.me/pay?pa=sonineels@okhdfcbank&tn=NYCE%20CLUB%20DONATION%20(Nelay%20Thaleshwar)";
+          "https://www.upi.me/pay?pa=9821155588@yes&am=97460&tn=NYCE%20CLUB";
         // if (data?.payment_link) {
         // window.location.href = data.payment_link;
         // } else {
