@@ -81,8 +81,8 @@ export function Footer() {
           <div className="space-y-6 lg:col-span-1">
             <div>
               <h3 className="text-white text-2xl font-polysans font-[400] mb-4">
-                About <span className="text-[#00afef]">nyce</span>
-                <span className="text-[#f63ee9]"> club</span>
+                About <span className="text-[#ffffff]">NYCE</span>
+                <span className="text-[#ffffff]"> HOLDING</span>
               </h3>
               <p className="font-overused-grotesk text-gray-400 leading-relaxed mb-6">
                 Empowering communities through verified NGOs and transparent
@@ -206,8 +206,8 @@ export function Footer() {
             <p className="font-overused-grotesk text-gray-400 text-center md:text-left">
               © {new Date().getFullYear()}
               {"  "}
-              <span className="text-[#00afef]">nyce</span>
-              <span className="text-[#f63ee9]"> club</span>. All rights
+              <span className="text-[#ffffff]">NYCE </span>
+              <span className="text-[#ffffff]"> HOLDING</span>. All rights
               reserved. Made with ❤️ for social impact.
             </p>
           </div>

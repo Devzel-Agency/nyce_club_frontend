@@ -129,7 +129,7 @@ const StoriesOfImpact = ({ storiesOfImpact }) => {
                 </div>
 
                 {/* Story Content */}
-                <div className="p-4 bg-gray-50">
+                <div className="p-4 h-full bg-gray-50">
                   <h3 className="text-lg font-polysans font-medium text-gray-900 mb-2">
                     {story.title}
                   </h3>
