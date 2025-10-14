@@ -1,78 +1,178 @@
-import React from "react";
+"use client";
+import { BACKEND_URL } from "@/apis/variables";
+import Padding from "@/components/padding";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Calendar, MapPin } from "lucide-react";
+import Link from "next/link";
 
-const socials = [
-  {
-    name: "LinkedIn",
-    icon: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-      </svg>
-    ),
-    href: "https://www.linkedin.com/company/nyce-club/",
-  },
-  {
-    name: "Instagram",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-.75a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5z" />
-      </svg>
-    ),
-    href: "https://www.instagram.com/nyce.club/",
-  },
-];
+export default function Events({ events }) {
+  // Helper to calculate fundraising progress for each event
+  const calculateAmounts = (event) => {
+    const totalAmountToBeRaised =
+      event.donationBreakdown?.reduce(
+        (sum, item) => sum + parseFloat(item.amount || 0),
+        0
+      ) || 0;
+    const totalAmountReceived = event.tempReceivedDonation || 0; // Using temp field for simplicity
+    const progress =
+      totalAmountToBeRaised > 0
+        ? (totalAmountReceived / totalAmountToBeRaised) * 100
+        : 0;
 
-export default function Events() {
+    return {
+      totalAmountToBeRaised,
+      totalAmountReceived,
+      progress: Math.min(progress, 100), // Cap progress at 100%
+    };
+  };
+
+  // Helper to get a styled badge based on event status
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "upcoming":
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+            Upcoming
+          </Badge>
+        );
+      case "ongoing":
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Ongoing
+          </Badge>
+        );
+      case "completed":
+        return <Badge className="bg-gray-200 text-gray-800">Completed</Badge>;
+      case "cancelled":
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return (
-    <div className="bg-white min-h-screen">
-      <main className="max-w-3xl mx-auto px-4 py-14 flex flex-col items-center pt-28 lg:pt-28">
-        <h1 className="text-3xl md:text-4xl  text-gray-900 mb-6 font-polysans font-medium text-center">
-          Events Coming Soon
+    <Padding className="bg-white min-h-screen">
+      <main className="max-w-4xl mx-auto pb-16 pt-20 lg:pt-28">
+        <h1 className="text-3xl md:text-4xl text-gray-900 pb-8 font-polysans font-medium text-center">
+          Upcoming Events & Drives
         </h1>
-
-        <div className="  rounded-xl pt-0 p-6 mb-8 w-full max-w32xl ">
-          <p className="text-lg md:text-xl text-gray-700 text-center font-overused-grotesk leading-relaxed">
-            We're building a vibrant community of{" "}
-            <span className="inline-block">
-              <span className="font-semibold">nyce people</span>
-            </span>{" "}
-            — those who care, contribute, and celebrate impact. Stay tuned for
-            events, drives, meet-ups, and more.
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center gap-6 w-full">
-          <a
-            target="#"
-            href="https://chat.whatsapp.com/D4WnE0WL1b7CAAgYn5mZKg"
-            className="bg-[#FBFB4C] text-gray-900 px-8 py-3 font-[500] rounded-full font-polysans text-lg w-full max-w-[16rem] text-center transition-colors"
-          >
-            Join the Community
-          </a>
-
-          <div className="flex flex-col items-center gap-4 mt-4">
-            <span className="font-medium text-gray-600 font-overused-grotesk">
-              Follow us for updates:
-            </span>
-            <div className="flex gap-5">
-              {socials.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="w-10 h-10 rounded-full flex items-center justify-center "
-                  aria-label={social.name}
-                >
-                  {social.icon}
-                </a>
-              ))}
+        <div className="space-y-8">
+          {events.length === 0 ? (
+            <div className="text-center py-16">
+              <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="font-polysans text-xl font-semibold text-gray-700 mb-2">
+                No Events Scheduled Yet
+              </h3>
+              <p className="font-overused-grotesk text-gray-500">
+                We are busy planning. Check back soon for exciting events!
+              </p>
             </div>
-          </div>
+          ) : (
+            events.map((event) => {
+              const { totalAmountToBeRaised, totalAmountReceived, progress } =
+                calculateAmounts(event);
+              return (
+                <Link
+                  href={`/events/${event._id}`} // Assuming you will have an event detail page
+                  key={event._id}
+                  className="block group bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 overflow-hidden"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+                    {/* Image Section */}
+                    <div className="md:col-span-2 my-auto ">
+                      <AspectRatio ratio={16 / 10}>
+                        <img
+                          src={
+                            event.eventImages?.[0]?.file
+                              ? `${BACKEND_URL}/upload/${event.eventImages[0].file}`
+                              : "https://via.placeholder.com/400x250?text=Event"
+                          }
+                          alt={event.eventName}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </AspectRatio>
+                    </div>
+
+                    {/* Details Section */}
+                    <div className="md:col-span-3 p-6 flex flex-col">
+                      <div className="flex justify-between items-start mb-2">
+                        <h2 className="text-xl text-gray-900 font-polysans font-medium">
+                          {event.eventName}
+                        </h2>
+                        {getStatusBadge(event.status)}
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1 text-sm text-gray-600 mb-3 font-overused-grotesk">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-4 h-4 text-gray-500" />
+                          <span>
+                            {new Date(event.eventDate).toLocaleDateString(
+                              "en-US",
+                              { year: "numeric", month: "long", day: "numeric" }
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-4 h-4 text-gray-500" />
+                          <span>{event.eventLocation}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-gray-700 mb-4 line-clamp-2 font-overused-grotesk text-sm leading-relaxed">
+                        {event.eventDescription}
+                      </p>
+
+                      {/* Fundraising Progress */}
+                      {totalAmountToBeRaised > 0 && (
+                        <div className="mt-auto mb-4">
+                          <div className="flex justify-between items-center text-xs font-overused-grotesk mb-1">
+                            <span className="text-green-600 font-semibold">
+                              ₹{totalAmountReceived.toLocaleString()} Raised
+                            </span>
+                            <span className="text-gray-500">
+                              Target: ₹{totalAmountToBeRaised.toLocaleString()}
+                            </span>
+                          </div>
+                          <Progress value={progress} className="h-2" />
+                        </div>
+                      )}
+
+                      {/* Sponsors */}
+                      {event.sponsors && event.sponsors.length > 0 && (
+                        <div className="mt-auto border-t border-gray-100 pt-3">
+                          <span className="text-xs font-semibold text-gray-500 font-overused-grotesk">
+                            Sponsored By:
+                          </span>
+                          <div className="flex items-center gap-3 mt-2">
+                            {event.sponsors.map(
+                              (sponsor) =>
+                                sponsor.image && (
+                                  <div
+                                    key={sponsor._id}
+                                    className="relative h-8 w-16"
+                                    title={sponsor.name}
+                                  >
+                                    <img
+                                      src={`${BACKEND_URL}/upload/${sponsor.image}`}
+                                      alt={sponsor.name}
+                                      className="h-full w-full object-contain grayscale opacity-70"
+                                    />
+                                  </div>
+                                )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })
+          )}
         </div>
       </main>
-    </div>
+    </Padding>
   );
 }

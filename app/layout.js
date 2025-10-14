@@ -101,6 +101,37 @@ const polySans = localFont({
   variable: "--font-polysans",
 });
 
+export const metadata = {
+  title: "Nyce Club | 100% Transparent Donations",
+  description:
+    "Join Nyce Club to make every donation count. Track where your money goes and support verified NGOs with complete transparency and impact.",
+  keywords: [
+    "donation transparency",
+    "NGOs",
+    "charity platform",
+    "donate online",
+    "Nyce Club",
+    "transparent charity",
+  ],
+  openGraph: {
+    title: "Nyce Club | Track Every Donation",
+    description:
+      "At Nyce Club, 100% of your donations go directly to verified NGOs. Track every penny and see your impact in real time.",
+    url: "https://www.nyce.club",
+    siteName: "Nyce Club",
+    images: [
+      {
+        url: "/hero-children.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Happy children making peace signs",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html

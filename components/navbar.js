@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Padding from "./padding";
+import Image from "next/image";
+import logo from "@/public/nyce-crop.png";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -78,10 +80,12 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="font-polysans text-xl lg:text-2xl font-[500] duration-200">
+            {/* <div className="font-polysans text-xl lg:text-2xl font-[500] duration-200">
               <span className="text-[#00afef]">nyce</span>
               <span className="text-[#f63ee9]"> club</span>
-            </div>
+            </div> */}
+
+            <Image src={logo} className=" w-32 " alt="NYCE logo" />
           </Link>
 
           {/* Desktop Navigation */}

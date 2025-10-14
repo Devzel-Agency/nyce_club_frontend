@@ -1,12 +1,15 @@
+import getAllEventsApi from "@/apis/events/getAllEventsApi";
 import Events from "@/sections/events/events";
-import React from "react";
 
-const Page = () => {
+// This ensures the page is dynamically rendered and fetches fresh data on each request.
+export const dynamic = "force-dynamic";
+
+export default async function EventsPage() {
+  const events = await getAllEventsApi();
+
   return (
     <div>
-      <Events />
+      <Events events={events} />
     </div>
   );
-};
-
-export default Page;
+}
